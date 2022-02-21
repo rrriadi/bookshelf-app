@@ -1,27 +1,26 @@
-const hapi = require('@hapi/hapi');
-const routes = require('./routes');
+const hapi = require('@hapi/hapi')
+const routes = require('./routes')
 
-const init = async () =>
-{
-    const server = hapi.server(
-        {
-            port: 5000,
-            host: 'localhost',
-            routes:
+const init = async () => {
+  const server = hapi.server(
+    {
+      port: 5000,
+      host: 'localhost',
+      routes:
             {
-                cors:
+              cors:
                 {
-                    origin: ['*'],
-                },
-            },
-        },
-    );
+                  origin: ['*']
+                }
+            }
+    }
+  )
 
-    server.route(routes);
+  server.route(routes)
 
-    await server.start();
+  await server.start()
 
-    console.log (`Bookshelf App Running on ${server.info.uri}`);
-};
+  console.log(`Bookshelf App Running on ${server.info.uri}`)
+}
 
-init();
+init()

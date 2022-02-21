@@ -1,45 +1,44 @@
-const {handler} = require('@hapi/hapi/lib/cors');
-const 
-{
+const { handler } = require('@hapi/hapi/lib/cors')
+const
+  {
     addBookHandler,
     getAllBooksHandler,
     getBooksByIdHandler,
     editBooksByIdHandler,
-    deleteBookByIdHandler,
-} = require('./handler');
+    deleteBookByIdHandler
+  } = require('./handler')
 
-
-const routes = 
+const routes =
 [
-    {
-        method: 'POST',
-        path: '/books',
-        handler: addBookHandler,
-    },
+  {
+    method: 'POST',
+    path: '/books',
+    handler: addBookHandler
+  },
 
-    {
-        method: 'GET',
-        path: '/books',
-        handler: getAllBooksHandler,
-    },
+  {
+    method: 'GET',
+    path: '/books',
+    handler: getAllBooksHandler
+  },
 
-    {
-        method: 'GET',
-        path: '/books/{bookid}',
-        handler: getBooksByIdHandler,
-    },
-    
-    {
-        method: 'PUT',
-        path:'/books/{bookid}',
-        handler: editBooksByIdHandler,
-    },
+  {
+    method: 'GET',
+    path: '/books/{bookid}',
+    handler: getBooksByIdHandler
+  },
 
-    {
-        method: 'DELETE',
-        path: '/books/{bookid}',
-        method: deleteBookByIdHandler,
-    },
-];
+  {
+    method: 'PUT',
+    path: '/books/{bookid}',
+    handler: editBooksByIdHandler
+  },
 
-module.exports = routes;
+  {
+    method: 'DELETE',
+    path: '/books/{bookid}',
+    handler: deleteBookByIdHandler
+  }
+]
+
+module.exports = routes
