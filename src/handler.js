@@ -1,24 +1,48 @@
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const books = require('./books')
 
 const addBookHandler = (request, h) => {
-  {
-    const { name, year, author, summary, publisher, pageCount, readPage, reading } = request.payload
+  const { name, year, author, summary, publisher, pageCount, readPage, reading } = request.payload
+
+  if (!name) {
+    const response = h.response(
+      {
+        status: 'fail',
+        message: 'Gagal menambahkan buku. Mohon isi nama buku'
+      }
+    )
+    response.code(400)
+    return response
+  } if (readPage > pageCount) {
+    const response = h.response(
+      {
+        status: 'fail',
+        message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount'
+      }
+    )
+    response.code(400)
+    return response
   }
 
   const id = nanoid(16)
   const insertedAt = new Date().toISOString()
   const updatedAt = insertedAt
-  const finished = (pageCount, readPage) => {
-    if (pageCount === readPage) {
-      return true
-    }
-    return false
-  }
+  const finished = (pageCount === readPage)
 
   const newBook =
     {
-      name, year, author, summary, publisher, pageCount, readPage, reading, id, finished, insertedAt, updatedAt
+      name,
+      year,
+      author,
+      summary,
+      publisher,
+      pageCount,
+      readPage,
+      reading,
+      id,
+      finished,
+      insertedAt,
+      updatedAt
     }
 
   books.push(newBook)
@@ -37,24 +61,6 @@ const addBookHandler = (request, h) => {
     )
     response.code(201)
     return response
-  } else if (name = null) {
-    const response = h.response(
-      {
-        status: 'fail',
-        message: 'Gagal menambahkan buku. Mohon isi nama buku'
-      }
-    )
-    response.code(400)
-    return response
-  } else if (readPage > pageCount) {
-    const response = h.response(
-      {
-        status: 'fail',
-        message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount'
-      }
-    )
-    response.code(400)
-    return response
   }
 
   const response = h.response(
@@ -67,15 +73,24 @@ const addBookHandler = (request, h) => {
   return response
 }
 
-const getAllBooksHandler = () => (
-  {
+const getAllBooksHandler = (h) => {
+  let bookList = books
+  bookList = bookList.map((book) => ({
+    id: book.id,
+    name: book.name,
+    publisher: book.publisher
+  }))
+
+  const response = h.response({
     status: 'success',
     data:
         {
-          books
+          books: bookList
         }
-  }
-)
+  })
+  response.code(200)
+  return response
+}
 
 const getBooksByIdHandler = (request, h) => {
   const { id } = request.params
@@ -96,8 +111,7 @@ const getBooksByIdHandler = (request, h) => {
     return response
   }
 
-  const response = h.response
-  (
+  const response = h.response(
     {
       status: 'fail',
       message: 'Buku tidak ditemukan'
@@ -112,9 +126,31 @@ const editBooksByIdHandler = (request, h) => {
 
   const { name, year, author, summary, publisher, pageCount, readPage, reading } = request.payload
 
+  if (!name) {
+    const response = h.response(
+      {
+        status: 'fail',
+        message: 'Gagal memperbarui buku. Mohon isi nama buku'
+      }
+    )
+    response.code(400)
+    return response
+  } if (readPage > pageCount) {
+    const response = h.response(
+      {
+        status: 'fail',
+        message: 'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount'
+      }
+    )
+    response.code(400)
+    return response
+  }
+
   const updatedAt = new Date().toISOString()
+  const finished = pageCount === readPage
 
   const index = books.findIndex((book) => book.id === id)
+
   if (index !== -1) {
     books[index] =
         {
@@ -126,7 +162,9 @@ const editBooksByIdHandler = (request, h) => {
           publisher,
           pageCount,
           readPage,
-          reading
+          reading,
+          updatedAt,
+          finished
         }
 
     const response = h.response(
@@ -137,26 +175,7 @@ const editBooksByIdHandler = (request, h) => {
     )
     response.code(200)
     return response
-  } else if (name = null) {
-    const response = h.response(
-      {
-        status: 'fail',
-        message: 'Gagal memperbarui buku. Mohon isi nama buku'
-      }
-    )
-    response.code(400)
-    return response
-  } else if (readPage > pageCount) {
-    const response = h.response(
-      {
-        status: 'fail',
-        message: 'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount'
-      }
-    )
-    response.code(400)
-    return response
   }
-
   const response = h.response(
     {
       status: 'fail',
