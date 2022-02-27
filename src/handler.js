@@ -73,8 +73,25 @@ const addBookHandler = (request, h) => {
   return response
 }
 
-const getAllBooksHandler = (h) => {
+const getAllBooksHandler = (request, h) => {
+  const { name: isName, reading: isReading, finished: isFinished } = request.query
+
   let bookList = books
+
+  if (isName !== undefined) {
+    bookList = bookList.filter((book) => book.name.toLowerCase().includes(isName.toLowerCase()))
+  }
+
+  if (isReading !== undefined) {
+    const reading = isReading === '1'
+    bookList = bookList.filter((book) => book.reading === reading)
+  }
+
+  if (isFinished !== undefined) {
+    const finished = isFinished === '1'
+    bookList = bookList.filter((book) => book.finished === finished)
+  }
+
   bookList = bookList.map((book) => ({
     id: book.id,
     name: book.name,
@@ -93,7 +110,7 @@ const getAllBooksHandler = (h) => {
 }
 
 const getBooksByIdHandler = (request, h) => {
-  const { id } = request.params
+  const { bookid: id } = request.params
 
   const book = books.filter((n) => n.id === id)[0]
 
@@ -122,7 +139,7 @@ const getBooksByIdHandler = (request, h) => {
 }
 
 const editBooksByIdHandler = (request, h) => {
-  const { id } = request.params
+  const { bookid: id } = request.params
 
   const { name, year, author, summary, publisher, pageCount, readPage, reading } = request.payload
 
@@ -182,12 +199,12 @@ const editBooksByIdHandler = (request, h) => {
       message: 'Gagal memperbarui buku. Id tidak ditemukan'
     }
   )
-  response.status(404)
+  response.code(404)
   return response
 }
 
 const deleteBookByIdHandler = (request, h) => {
-  const { id } = request.params
+  const { bookid: id } = request.params
 
   const index = books.findIndex((book) => book.id === id)
 
@@ -199,7 +216,7 @@ const deleteBookByIdHandler = (request, h) => {
         message: 'Buku berhasil dihapus'
       }
     )
-    response.status(200)
+    response.code(200)
     return response
   }
 
@@ -209,7 +226,7 @@ const deleteBookByIdHandler = (request, h) => {
       message: 'Buku gagal dihapus. Id tidak ditemukan'
     }
   )
-  response.status(404)
+  response.code(404)
   return response
 }
 
